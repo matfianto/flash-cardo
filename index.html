@@ -958,8 +958,11 @@
         }
 
         function updateDropdowns() {
-            fillSelect('studyDeckFilter', '<option value="all">Semua Dek (Global)</option><option value="ungrouped">(Tanpa Dek)</option>', decks, studyDeck);
-            fillSelect('studySubGroupFilter', '<option value="all">Semua Sub-Grup</option><option value="ungrouped">(Tanpa Sub-Grup)</option>', subGroups, studySubGroup);
+            // Dropdown filter belajar hanya menampilkan dek/sub-grup yang masih punya kartu
+            const usedDecks = new Set(cards.map(c => c.deck));
+            const usedSubs = new Set(cards.map(c => c.subgroup));
+            fillSelect('studyDeckFilter', '<option value="all">Semua Dek (Global)</option><option value="ungrouped">(Tanpa Dek)</option>', decks.filter(d => usedDecks.has(d)), studyDeck);
+            fillSelect('studySubGroupFilter', '<option value="all">Semua Sub-Grup</option><option value="ungrouped">(Tanpa Sub-Grup)</option>', subGroups.filter(sg => usedSubs.has(sg)), studySubGroup);
             fillSelect('manageDeckFilter', '<option value="all">Semua Dek</option><option value="ungrouped">(Tanpa Dek)</option>', decks);
             fillSelect('modalCardDeck', '<option value="">(Tanpa Dek)</option>', decks, '');
             fillSelect('modalCardSubGroup', '<option value="">(Tanpa Sub-Grup)</option>', subGroups, '');
@@ -1600,7 +1603,7 @@
             const list = document.getElementById('manageDecksList');
             let html = decks.map(d => `
                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl text-xs">
-                    <span class="font-semibold text-slate-800 dark:text-slate-200">${esc(d)}</span>
+                    <span class="font-semibold text-slate-800 dark:text-slate-200">${esc(d)} <span class="font-normal text-slate-400">(${cards.filter(c => c.deck === d).length} kartu)</span></span>
                     <div class="flex items-center space-x-1">
                         <button onclick="renameDeck(${jsq(d)})" class="p-1.5 bg-white dark:bg-slate-600 text-slate-600 dark:text-slate-200 rounded-lg hover:bg-slate-100"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
                         <button onclick="deleteDeck(${jsq(d)})" class="p-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-600 rounded-lg hover:bg-rose-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
@@ -1608,8 +1611,38 @@
                 </div>
             `).join('');
             if (decks.length === 0) html = `<p class="text-xs text-slate-400 text-center py-4">Belum ada dek.</p>`;
+            const emptyDecks = decks.filter(d => !cards.some(c => c.deck === d));
+            if (emptyDecks.length) {
+                html = `<button onclick="cleanupEmptyDecks()" class="w-full p-2.5 mb-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-semibold hover:bg-amber-100">Hapus ${emptyDecks.length} dek kosong</button>` + html;
+            }
             list.innerHTML = html;
             refreshIcons();
+        }
+
+        function cleanupEmptyDecks() {
+            const empty = decks.filter(d => !cards.some(c => c.deck === d));
+            if (!empty.length) return;
+            showConfirmModal('Hapus Dek Kosong', `Hapus ${empty.length} dek yang tidak berisi kartu (${empty.join(', ')})?`, () => {
+                decks = decks.filter(d => !empty.includes(d));
+                saveCards();
+                updateDropdowns();
+                renderManageDecksList();
+                refreshAfterDataChange();
+                showToast('Dek kosong dihapus!', 'success');
+            });
+        }
+
+        function cleanupEmptySubGroups() {
+            const empty = subGroups.filter(sg => !cards.some(c => c.subgroup === sg));
+            if (!empty.length) return;
+            showConfirmModal('Hapus Sub-Grup Kosong', `Hapus ${empty.length} sub-grup yang tidak berisi kartu (${empty.join(', ')})?`, () => {
+                subGroups = subGroups.filter(sg => !empty.includes(sg));
+                saveCards();
+                updateDropdowns();
+                renderManageSubGroupsList();
+                refreshAfterDataChange();
+                showToast('Sub-grup kosong dihapus!', 'success');
+            });
         }
 
         function addNewDeck() {
@@ -1666,11 +1699,15 @@
             const list = document.getElementById('manageSubGroupsList');
             let html = subGroups.map(sg => `
                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl text-xs">
-                    <span class="font-semibold text-slate-800 dark:text-slate-200">${esc(sg)}</span>
+                    <span class="font-semibold text-slate-800 dark:text-slate-200">${esc(sg)} <span class="font-normal text-slate-400">(${cards.filter(c => c.subgroup === sg).length} kartu)</span></span>
                     <button onclick="deleteSubGroup(${jsq(sg)})" class="p-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-600 rounded-lg hover:bg-rose-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 </div>
             `).join('');
             if (subGroups.length === 0) html = `<p class="text-xs text-slate-400 text-center py-4">Belum ada sub-grup.</p>`;
+            const emptySubs = subGroups.filter(sg => !cards.some(c => c.subgroup === sg));
+            if (emptySubs.length) {
+                html = `<button onclick="cleanupEmptySubGroups()" class="w-full p-2.5 mb-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-semibold hover:bg-amber-100">Hapus ${emptySubs.length} sub-grup kosong</button>` + html;
+            }
             list.innerHTML = html;
             refreshIcons();
         }
@@ -1777,12 +1814,12 @@
         function openBulkDeleteModal() {
             const deckSel = document.getElementById('bulkDeleteDeckSelect');
             let deckHtml = '<option value="ungrouped">(Tanpa Dek)</option>';
-            decks.forEach(d => { deckHtml += `<option value="${esc(d)}">${esc(d)}</option>`; });
+            decks.filter(d => cards.some(c => c.deck === d)).forEach(d => { deckHtml += `<option value="${esc(d)}">${esc(d)}</option>`; });
             deckSel.innerHTML = deckHtml;
 
             const subSel = document.getElementById('bulkDeleteSubGroupSelect');
             let subHtml = '<option value="ungrouped">(Tanpa Sub-Grup)</option>';
-            subGroups.forEach(sg => { subHtml += `<option value="${esc(sg)}">${esc(sg)}</option>`; });
+            subGroups.filter(sg => cards.some(c => c.subgroup === sg)).forEach(sg => { subHtml += `<option value="${esc(sg)}">${esc(sg)}</option>`; });
             subSel.innerHTML = subHtml;
 
             document.getElementById('bulkDeleteType').value = 'deck';
@@ -2023,12 +2060,12 @@
         function openExportModal() {
             const deckSel = document.getElementById('exportDeckSelect');
             let deckHtml = '<option value="ungrouped">(Tanpa Dek)</option>';
-            decks.forEach(d => { deckHtml += `<option value="${esc(d)}">${esc(d)}</option>`; });
+            decks.filter(d => cards.some(c => c.deck === d)).forEach(d => { deckHtml += `<option value="${esc(d)}">${esc(d)}</option>`; });
             deckSel.innerHTML = deckHtml;
 
             const subSel = document.getElementById('exportSubGroupSelect');
             let subHtml = '<option value="ungrouped">(Tanpa Sub-Grup)</option>';
-            subGroups.forEach(sg => { subHtml += `<option value="${esc(sg)}">${esc(sg)}</option>`; });
+            subGroups.filter(sg => cards.some(c => c.subgroup === sg)).forEach(sg => { subHtml += `<option value="${esc(sg)}">${esc(sg)}</option>`; });
             subSel.innerHTML = subHtml;
 
             document.getElementById('exportFilterType').value = 'all';
