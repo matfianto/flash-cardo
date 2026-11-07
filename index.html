@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flash Cardo</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Flash Cardo">
+
+  <!-- Eksternal CDN (Lucide Icons & Tailwind CSS) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Transisi Halus Kartu */
+    .card-perspective {
+      perspective: 1000px;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- ================= PWA INLINE GENERATOR SCRIPT ================= -->
+  <script>
+    (function setupInlinePWA() {
+      // 1. Generate Icon PNG (192, 512, Maskable) via Offscreen Canvas
+      function createIconBlob(dimension, isMaskable) {
+        return new Promise((resolve) => {
+          const canvas = document.createElement('canvas');
+          canvas.width = dimension;
+          canvas.height = dimension;
+          const ctx = canvas.getContext('2d');
+
+          // Background Gradient
+          const bgGrad = ctx.createLinearGradient(0, 0, dimension, dimension);
+          bgGrad.addColorStop(0, '#4338ca');
+          bgGrad.addColorStop(0.5, '#4f46e5');
+          bgGrad.addColorStop(1, '#6366f1');
+
+          if (isMaskable) {
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, dimension, dimension);
+          } else {
+            const radius = dimension * 0.22;
+            ctx.fillStyle = bgGrad;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(dimension - radius, 0);
+            ctx.quadraticCurveTo(dimension, 0, dimension, radius);
+            ctx.lineTo(dimension, dimension - radius);
+            ctx.quadraticCurveTo(dimension, dimension, dimension - radius, dimension);
+            ctx.lineTo(radius, dimension);
+            ctx.quadraticCurveTo(0, dimension, 0, dimension - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          const scale = isMaskable ? 0.6 : 0.75;
+          const center = dimension / 2;
+          ctx.save();
+          ctx.translate(center, center);
+          ctx.scale(scale, scale);
+          ctx.translate(-center, -center);
+
+          // Card Belakang
+          ctx.save();
+          ctx.translate(dimension * 0.46, dimension * 0.52);
+          ctx.rotate(-8 * Math.PI / 180);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+          roundedRect(ctx, -dimension * 0.24, -dimension * 0.32, dimension * 0.48, dimension * 0.64, dimension * 0.05);
+          ctx.fill();
+          ctx.restore();
+
+          // Card Depan
+          ctx.save();
+          ctx.translate(dimension * 0.54, dimension * 0.5);
+          ctx.rotate(4 * Math.PI / 180);
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+          ctx.shadowBlur = dimension * 0.04;
+          ctx.shadowOffsetY = dimension * 0.02;
+          roundedRect(ctx, -dimension * 0.24, -dimension * 0.32, dimension * 0.48, dimension * 0.64, dimension * 0.05);
+          ctx.fill();
+
+          // Flash Lightning Bolt
+          ctx.shadowColor = 'transparent';
+          ctx.fillStyle = '#4f46e5';
+          ctx.beginPath();
+          const bw = dimension * 0.18;
+          const bh = dimension * 0.32;
+          ctx.moveTo(dimension * 0.03, -bh * 0.5);
+          ctx.lineTo(-bw * 0.5, bh * 0.08);
+          ctx.lineTo(-dimension * 0.01, bh * 0.08);
+          ctx.lineTo(-dimension * 0.03, bh * 0.5);
+          ctx.lineTo(bw * 0.5, -bh * 0.08);
+          ctx.lineTo(dimension * 0.01, -bh * 0.08);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.restore();
+          ctx.restore();
+
+          canvas.toBlob((blob) => resolve(blob), 'image/png');
+        });
+      }
+
+      function roundedRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+      }
+
+      // 2. Pasang Manifest & Service Worker
+      Promise.all([
+        createIconBlob(192, false),
+        createIconBlob(512, false),
+        createIconBlob(512, true)
+      ]).then(([icon192Blob, icon512Blob, iconMaskableBlob]) => {
+        const url192 = URL.createObjectURL(icon192Blob);
+        const url512 = URL.createObjectURL(icon512Blob);
+        const urlMaskable = URL.createObjectURL(iconMaskableBlob);
+
+        // Apple touch icon
+        const appleIcon = document.createElement('link');
+        appleIcon.rel = 'apple-touch-icon';
+        appleIcon.href = url192;
+        document.head.appendChild(appleIcon);
+
+        // Manifest Object
+        const manifestObj = {
+          name: "Flash Cardo - Leitner Spaced Repetition",
+          short_name: "Flash Cardo",
+          description: "Flashcard web app berbasis Leitner Spaced Repetition System dan Matching Game",
+          start_url: window.location.href,
+          scope: "./",
+          display: "standalone",
+          background_color: "#0f172a",
+          theme_color: "#4f46e5",
+          icons: [
+            { src: url192, sizes: "192x192", type: "image/png", purpose: "any" },
+            { src: url512, sizes: "512x512", type: "image/png", purpose: "any" },
+            { src: urlMaskable, sizes: "512x512", type: "image/png", purpose: "maskable" }
+          ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = URL.createObjectURL(manifestBlob);
+        document.head.appendChild(manifestLink);
+
+        // Service Worker via Blob (Cache-first offline support)
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+          const swCode = `
+            const CACHE_NAME = 'flash-cardo-inline-v1';
+            self.addEventListener('install', (e) => {
+              self.skipWaiting();
+            });
+            self.addEventListener('activate', (e) => {
+              e.waitUntil(clients.claim());
+            });
+            self.addEventListener('fetch', (e) => {
+              if (e.request.method !== 'GET') return;
+              e.respondWith(
+                caches.match(e.request).then((cached) => {
+                  return cached || fetch(e.request).then((resp) => {
+                    if (resp && resp.status === 200 && (e.request.url.startsWith('http') || e.request.url.startsWith('https'))) {
+                      const clone = resp.clone();
+                      caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+                    }
+                    return resp;
+                  }).catch(() => cached);
+                })
+              );
+            });
+          `;
+          try {
+            const swBlob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swUrl, { scope: './' })
+              .catch(() => { /* fallback jika blob worker dibatasi browser */ });
+          } catch (e) {
+            console.warn('PWA inline worker notice:', e);
+          }
+        }
+      });
+    })();
+  </script>
+
+  <!-- ================= APP HEADER ================= -->
+  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+          <i data-lucide="zap" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-none">Flash Cardo</h1>
+          <span class="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Leitner System</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center space-x-1 sm:space-x-2">
+        <button onclick="switchTab('study')" id="tabBtnStudy" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span class="hidden xs:inline">Belajar</span>
+        </button>
+        <button onclick="switchTab('stats')" id="tabBtnStats" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
+          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+          <span class="hidden xs:inline">Statistik</span>
+        </button>
+        <button onclick="switchTab('manage')" id="tabBtnManage" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
+          <i data-lucide="folder-kanban" class="w-4 h-4"></i>
+          <span class="hidden xs:inline">Kelola Kartu</span>
+        </button>
+
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+
+        <!-- Dark Mode Toggle -->
+        <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Toggle Tema">
+          <i id="themeIcon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- TAB 1: STUDY AREA -->
+    <section id="tabStudy" class="space-y-4">
+      <!-- Filter Bar & Mode Controls -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Mode:</span>
+          <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-xl flex items-center space-x-1 text-xs">
+            <button onclick="requestStudyMode('flip')" id="modeBtnFlip" class="px-3 py-1.5 rounded-lg font-semibold bg-white dark:bg-slate-600 text-indigo-600 dark:text-white shadow-sm flex items-center space-x-1">
+              <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+              <span>Flip Klasik</span>
+            </button>
+            <button onclick="requestStudyMode('match')" id="modeBtnMatch" class="px-3 py-1.5 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center space-x-1">
+              <i data-lucide="puzzle" class="w-3.5 h-3.5"></i>
+              <span>Matching</span>
+            </button>
+          </div>
+
+          <button onclick="toggleSwapDirection()" id="swapBtn" class="p-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl transition flex items-center space-x-1 text-xs font-semibold px-3" title="Tukar Arah Tanya/Jawab">
+            <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Tukar Sisi</span>
+          </button>
+        </div>
+
+        <!-- Filter Dek & Subgroup -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select id="studyDeckSelect" onchange="onStudyDeckChange()" class="w-1/2 sm:w-auto text-xs bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">Semua Dek</option>
+          </select>
+          <select id="studySubGroupSelect" onchange="onStudySubGroupChange()" class="w-1/2 sm:w-auto text-xs bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="all">Semua Sub-Grup</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Active Study Area Card -->
+      <div id="studyArea" class="min-h-[460px] flex flex-col justify-center">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 2: STATISTIK LEITNER -->
+    <section id="tabStats" class="space-y-6 hidden">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="statsBoxesContainer">
+        <!-- Generated by JS -->
+      </div>
+
+      <!-- Leitner System SRS Explanation -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+          <i data-lucide="help-circle" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>
+          <span>Panduan Spaced Repetition System (SRS) Leitner</span>
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Sistem Leitner mengelompokkan kartu ke dalam 5 Kotak (Box) bertingkat. Kartu yang baru dibuat berada di <strong>Box 1</strong>. Semakin sering Anda berhasil mengingat kartu, semakin tinggi level Box dan semakin jarang kartu tersebut perlu direview.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+          <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 space-y-2">
+            <h4 class="text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 text-emerald-700 dark:text-emerald-400">
+              <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+              <span>Cara Naik ke Box 4 dan Box 5</span>
+            </h4>
+            <p class="text-xs leading-relaxed">
+              Kenaikan level bersifat <strong>akumulatif</strong> dari sesi ke sesi:
+            </p>
+            <ul class="text-xs list-disc list-inside space-y-1">
+              <li>Pilih <strong>Bisa (+1 Box)</strong>: Kartu di Box 3 akan naik ke Box 4, lalu di sesi berikutnya naik ke Box 5.</li>
+              <li>Pilih <strong>Mudah (+2 Box)</strong>: Kartu melompat 2 tingkat (misal dari Box 2 langsung ke Box 4, atau Box 3 ke Box 5). Maksimal level adalah Box 5.</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200 space-y-2">
+            <h4 class="text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 text-rose-700 dark:text-rose-400">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              <span>Hukuman Lupa (Reset ke Box 1)</span>
+            </h4>
+            <p class="text-xs leading-relaxed">
+              Jika kartu yang berada di Box 4 atau Box 5 Anda jawab <strong>Ulangi</strong>, kartu tersebut akan <strong>segera di-reset kembali ke Box 1</strong> untuk dipelajari kembali dari awal. Ini adalah inti metode active recall agar memori benar-benar teruji.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: KELOLA KARTU -->
+    <section id="tabManage" class="space-y-4 hidden">
+      <!-- Search Bar -->
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-slate-400"></i>
+        <input type="text" id="manageSearchInput" oninput="renderManageList()" placeholder="Cari pertanyaan, jawaban, atau petunjuk..." class="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 shadow-sm">
+      </div>
+
+      <!-- Action Buttons Organized -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+        <!-- Baris 1: Aksi Utama & Tampilan -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openCardModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow-sm">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Tambah Kartu</span>
+            </button>
+            <button onclick="toggleAllDecksAccordion()" id="btnToggleAllDecks" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-medium transition flex items-center space-x-1.5">
+              <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i>
+              <span>Buka/Tutup Dek</span>
+            </button>
+          </div>
+
+          <!-- Danger Action: Hapus Kategori -->
+          <button onclick="openCategoryDeleteModal()" class="px-3 py-2 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-medium transition flex items-center space-x-1.5">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Hapus Masal</span>
+          </button>
+        </div>
+
+        <!-- Baris 2: CSV & Backup Data Tools -->
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <label class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition flex items-center space-x-1 cursor-pointer">
+              <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+              <span>Impor CSV</span>
+              <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVImport(event)" class="hidden">
+            </label>
+            <button onclick="openExportModal()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition flex items-center space-x-1">
+              <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+              <span>Ekspor CSV</span>
+            </button>
+            <button onclick="checkDuplicates()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition flex items-center space-x-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Cek Duplikat</span>
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="backupJSON()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition flex items-center space-x-1">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Backup JSON</span>
+            </button>
+            <label class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition flex items-center space-x-1 cursor-pointer">
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+              <span>Restore JSON</span>
+              <input type="file" id="jsonFileInput" accept=".json" onchange="handleJSONRestore(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards List grouped by Dek & Sub-Group -->
+      <div id="manageCardList" class="space-y-4">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Modal Tambah / Edit Kartu -->
+  <div id="cardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
+        <h3 id="cardModalTitle" class="text-base font-bold text-slate-900 dark:text-white">Tambah Kartu Baru</h3>
+        <button onclick="closeCardModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="editCardId">
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Sisi Depan (Pertanyaan / Istilah)</label>
+          <textarea id="cardFrontInput" rows="3" class="w-full p-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100" placeholder="Contoh: Apa arti Spaced Repetition?"></textarea>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Sisi Belakang (Jawaban / Arti)</label>
+          <textarea id="cardBackInput" rows="3" class="w-full p-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100" placeholder="Contoh: Metode pengulangan berjarak untuk memori jangka panjang."></textarea>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Petunjuk / Hint (Opsional)</label>
+          <input type="text" id="cardHintInput" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100" placeholder="Contoh: Singkatan dari SRS">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Dek</label>
+            <input type="text" id="cardDeckInput" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100" placeholder="Contoh: Kosakata Bahasa Inggris">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Sub-Grup (Opsional)</label>
+            <input type="text" id="cardSubGroupInput" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100" placeholder="Contoh: Unit 1">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100 dark:border-slate-700">
+        <button onclick="closeCardModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium text-xs sm:text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition">Batal</button>
+        <button onclick="saveCardFromModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-xs sm:text-sm transition">Simpan Kartu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modal Export Filter Options -->
+  <div id="exportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-4">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <i data-lucide="file-down" class="w-5 h-5 text-indigo-600"></i>
+        <span>Pilihan Ekspor CSV</span>
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Pilih jangkauan kartu yang ingin Anda unduh ke dalam format CSV.</p>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Cakupan Kartu</label>
+          <select id="exportScopeSelect" onchange="onExportScopeChange()" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none">
+            <option value="all">Semua Kartu</option>
+            <option value="deck">Hanya Dek Tertentu</option>
+            <option value="subgroup">Hanya Sub-Grup Tertentu</option>
+          </select>
+        </div>
+
+        <div id="exportTargetWrapper" class="hidden">
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1" id="exportTargetLabel">Pilih Kategori</label>
+          <select id="exportTargetSelect" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none">
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-3">
+        <button onclick="closeExportModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-medium">Batal</button>
+        <button onclick="executeExportCSV()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold">Unduh CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal Hapus Kategori Masal -->
+  <div id="categoryDeleteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-4">
+      <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center space-x-2">
+        <i data-lucide="trash-2" class="w-5 h-5"></i>
+        <span>Hapus Kartu Masal</span>
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Pilih kategori yang ingin dihapus seluruh kartunya sekaligus.</p>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Target Penghapusan</label>
+          <select id="deleteTargetType" onchange="onDeleteTargetTypeChange()" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none">
+            <option value="deck">Seluruh Dek</option>
+            <option value="subgroup">Seluruh Sub-Grup</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1" id="deleteTargetSelectLabel">Pilih Dek</label>
+          <select id="deleteTargetValue" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none">
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-3">
+        <button onclick="closeCategoryDeleteModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-medium">Batal</button>
+        <button onclick="executeCategoryDelete()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold">Hapus Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Modal Konfirmasi Kustom (Menggantikan confirm() sandbox yang diblokir) -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-3 text-center">
+      <div id="confirmIconWrapper" class="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center">
+        <i data-lucide="alert-circle" class="w-6 h-6"></i>
+      </div>
+      <h3 id="confirmTitle" class="text-base font-bold text-slate-900 dark:text-white">Konfirmasi Tindakan</h3>
+      <p id="confirmMessage" class="text-xs text-slate-600 dark:text-slate-300"></p>
+      <div class="flex items-center justify-center space-x-2 pt-3">
+        <button id="confirmCancelBtn" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium">Batal</button>
+        <button id="confirmOkBtn" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold">Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT CORE LOGIC ================= -->
+  <script>
+    // --- Data State & Safe Storage Handlers ---
+    let cards = [];
+    let currentTab = 'study'; // 'study', 'stats', 'manage'
+    let studyMode = 'flip'; // 'flip', 'match'
+    let swapDirection = false; // false = front -> back, true = back -> front
+    let studyDeck = 'all';
+    let studySubGroup = 'all';
+
+    // Flip Study Session State
+    let studyQueue = [];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let showHint = false;
+
+    // Matching Game State
+    let matchPairs = [];
+    let matchMatchedIds = [];
+    let matchSelectedLeft = null;
+    let matchSelectedRight = null;
+    let matchSeconds = 0;
+    let matchTimerInterval = null;
+    let matchIsPlaying = false;
+    let matchPairCount = 6;
+
+    // Manage UI Accordion State
+    let collapsedDecks = {};
+
+    // Safe LocalStorage API
+    function safeGet(key, def) {
+      try {
+        const val = localStorage.getItem(key);
+        return val ? JSON.parse(val) : def;
+      } catch (e) {
+        return def;
+      }
+    }
+    function safeSet(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch (e) {
+        console.warn('Storage unavailable:', e);
+      }
+    }
+
+    // Initialize Default Cards if Empty
+    function initData() {
+      const stored = safeGet('flashcsv_cards', null);
+      if (stored && Array.isArray(stored) && stored.length > 0) {
+        cards = stored;
+      } else {
+        cards = [
+          { id: '1', front: 'Active Recall', back: 'Metode memicu daya ingat secara aktif tanpa melihat contekan terlebih dahulu.', hint: 'Melatih otak menarik informasi', deck: 'Prinsip Belajar', subgroup: 'Metodologi', box: 1 },
+          { id: '2', front: 'Spaced Repetition', back: 'Teknik menjadwalkan jeda review materi secara bertahap untuk memori jangka panjang.', hint: 'SRS', deck: 'Prinsip Belajar', subgroup: 'Metodologi', box: 2 },
+          { id: '3', front: 'Leitner System', back: 'Sistem belajar menggunakan kotak bernomor (Box 1-5) berdasarkan tingkat penguasaan.', hint: 'Ditemukan oleh Sebastian Leitner', deck: 'Prinsip Belajar', subgroup: 'Metodologi', box: 3 },
+          { id: '4', front: 'Ephemeral Memory', back: 'Memori jangka pendek yang cepat hilang jika tidak diulang.', hint: 'Sementara', deck: 'Neurologi', subgroup: 'Dasar', box: 1 },
+          { id: '5', front: 'Synaptic Plasticity', back: 'Kemampuan sinapsis otak untuk menguat seiring proses belajar dan latihan rutin.', hint: 'Fleksibilitas otak', deck: 'Neurologi', subgroup: 'Dasar', box: 2 },
+          { id: '6', front: 'Pomodoro Technique', back: 'Metode manajemen waktu dengan interval fokus 25 menit dan 5 menit istirahat.', hint: 'Teknik tomat dari Francesco Cirillo', deck: 'Produktivitas', subgroup: 'Waktu', box: 1 }
+        ];
+        saveCards();
+      }
+    }
+
+    function saveCards() {
+      safeSet('flashcsv_cards', cards);
+    }
+
+    // --- Toast Notification ---
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-slate-800 dark:bg-slate-700 text-white border border-slate-600'
+      };
+      toast.className = `${colors[type] || colors.info} px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto`;
+      toast.innerHTML = `<span>${msg}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // --- Custom Modal Confirmation Dialog ---
+    function showConfirmModal(title, msg, onConfirm, isDanger = true) {
+      const modal = document.getElementById('confirmModal');
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = msg;
+      
+      const okBtn = document.getElementById('confirmOkBtn');
+      okBtn.className = isDanger 
+        ? "px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold"
+        : "px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold";
+
+      const cancelBtn = document.getElementById('confirmCancelBtn');
+
+      function cleanup() {
+        modal.classList.add('hidden');
+        okBtn.onclick = null;
+        cancelBtn.onclick = null;
+      }
+
+      cancelBtn.onclick = cleanup;
+      okBtn.onclick = () => {
+        cleanup();
+        onConfirm();
+      };
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // --- Tab Switching ---
+    function switchTab(tab) {
+      if (matchIsPlaying && currentTab === 'study' && tab !== 'study') {
+        showConfirmModal('Akhiri Sesi Matching?', 'Sesi permainan mencocokkan sedang berjalan. Ingin mengakhiri dan berpindah halaman?', () => {
+          stopMatchingGame();
+          executeTabSwitch(tab);
+        });
+        return;
+      }
+      executeTabSwitch(tab);
+    }
+
+    function executeTabSwitch(tab) {
+      currentTab = tab;
+      ['study', 'stats', 'manage'].forEach(t => {
+        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const section = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (t === tab) {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400";
+          section.classList.remove('hidden');
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700";
+          section.classList.add('hidden');
+        }
+      });
+
+      if (tab === 'study') {
+        updateStudyFilters();
+        initStudySession();
+      } else if (tab === 'stats') {
+        renderStats();
+      } else if (tab === 'manage') {
+        renderManageList();
+      }
+      lucide.createIcons();
+    }
+
+    // --- Dark Mode ---
+    function initTheme() {
+      const isDark = safeGet('flashcsv_theme', false);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
+      }
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      safeSet('flashcsv_theme', isDark);
+      document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    }
+
+    // --- Study Mode Controls ---
+    function requestStudyMode(mode) {
+      if (matchIsPlaying && studyMode === 'match' && mode !== 'match') {
+        showConfirmModal('Akhiri Matching Game?', 'Progres waktu permainan ini akan dibatalkan.', () => {
+          stopMatchingGame();
+          executeStudyMode(mode);
+        });
+        return;
+      }
+      executeStudyMode(mode);
+    }
+
+    function executeStudyMode(mode) {
+      studyMode = mode;
+      ['flip', 'match'].forEach(m => {
+        const btn = document.getElementById(`modeBtn${m.charAt(0).toUpperCase() + m.slice(1)}`);
+        if (btn) {
+          btn.className = m === mode
+            ? "px-3 py-1.5 rounded-lg font-semibold bg-white dark:bg-slate-600 text-indigo-600 dark:text-white shadow-sm flex items-center space-x-1"
+            : "px-3 py-1.5 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center space-x-1";
+        }
+      });
+      initStudySession();
+    }
+
+    function toggleSwapDirection() {
+      swapDirection = !swapDirection;
+      const btn = document.getElementById('swapBtn');
+      if (swapDirection) {
+        btn.className = "p-2 bg-indigo-600 text-white rounded-xl transition flex items-center space-x-1 text-xs font-semibold px-3 shadow-sm";
+      } else {
+        btn.className = "p-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl transition flex items-center space-x-1 text-xs font-semibold px-3";
+      }
+      initStudySession();
+      showToast(swapDirection ? 'Arah dibalik: Belakang ke Depan' : 'Arah normal: Depan ke Belakang', 'info');
+    }
+
+    // --- Filter Dropdown Population ---
+    function updateStudyFilters() {
+      const deckSelect = document.getElementById('studyDeckSelect');
+      const subGroupSelect = document.getElementById('studySubGroupSelect');
+
+      const decks = Array.from(new Set(cards.map(c => c.deck || 'Tanpa Dek'))).sort();
+      deckSelect.innerHTML = '<option value="all">Semua Dek</option>';
+      decks.forEach(d => {
+        deckSelect.innerHTML += `<option value="${d}" ${studyDeck === d ? 'selected' : ''}>${d}</option>`;
+      });
+
+      updateSubGroupFilterOptions();
+    }
+
+    function updateSubGroupFilterOptions() {
+      const subGroupSelect = document.getElementById('studySubGroupSelect');
+      let filtered = cards;
+      if (studyDeck !== 'all') {
+        filtered = filtered.filter(c => (c.deck || 'Tanpa Dek') === studyDeck);
+      }
+      const subgroups = Array.from(new Set(filtered.map(c => c.subgroup || 'Tanpa Sub-Grup'))).sort();
+      subGroupSelect.innerHTML = '<option value="all">Semua Sub-Grup</option>';
+      subgroups.forEach(sg => {
+        subGroupSelect.innerHTML += `<option value="${sg}" ${studySubGroup === sg ? 'selected' : ''}>${sg}</option>`;
+      });
+    }
+
+    function onStudyDeckChange() {
+      studyDeck = document.getElementById('studyDeckSelect').value;
+      studySubGroup = 'all';
+      updateSubGroupFilterOptions();
+      initStudySession();
+    }
+
+    function onStudySubGroupChange() {
+      studySubGroup = document.getElementById('studySubGroupSelect').value;
+      initStudySession();
+    }
+
+    // --- Study Session Initialization ---
+    function initStudySession() {
+      isFlipped = false;
+      showHint = false;
+
+      // Filter kartu berdasarkan dek & subgroup
+      let pool = [...cards];
+      if (studyDeck !== 'all') {
+        pool = pool.filter(c => (c.deck || 'Tanpa Dek') === studyDeck);
+      }
+      if (studySubGroup !== 'all') {
+        pool = pool.filter(c => (c.subgroup || 'Tanpa Sub-Grup') === studySubGroup);
+      }
+
+      studyQueue = pool;
+      currentIndex = 0;
+
+      if (studyMode === 'match') {
+        initMatchingGame(pool);
+      } else {
+        stopMatchingGameTimer();
+        renderStudyArea();
+      }
+    }
+
+    // --- FLIP MODE RENDERER ---
+    function renderStudyArea() {
+      const container = document.getElementById('studyArea');
+      if (!container) return;
+
+      if (studyMode === 'match') {
+        renderMatchingGameUI(container);
+        lucide.createIcons();
+        return;
+      }
+
+      // Layar Selesai jika antrean kosong
+      if (studyQueue.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm text-center max-w-md mx-auto space-y-4">
+            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto">
+              <i data-lucide="check-check" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sesi Belajar Selesai!</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Semua kartu dalam filter ini telah dipelajari atau dikuasai.
+            </p>
+            <button onclick="resetStudyFilter()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+              Reset Filter Belajar
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      if (currentIndex >= studyQueue.length) {
+        currentIndex = 0;
+      }
+
+      const card = studyQueue[currentIndex];
+      if (!card) return;
+
+      const currentBox = card.box || 1;
+      const rawFront = swapDirection ? card.back : card.front;
+      const rawBack = swapDirection ? card.front : card.back;
+
+      // Hitung kartu per box pada filter aktif
+      const countBox1 = studyQueue.filter(c => (c.box || 1) === 1).length;
+      const countBox2 = studyQueue.filter(c => (c.box || 1) === 2).length;
+      const countBox3 = studyQueue.filter(c => (c.box || 1) >= 3).length;
+
+      container.innerHTML = `
+        <div class="max-w-xl w-full mx-auto space-y-4">
+          <!-- Status Atas: Navigasi & Box Indikator -->
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 px-2">
+            <div>Kartu ${currentIndex + 1} dari ${studyQueue.length}</div>
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-300">B1: ${countBox1}</span>
+              <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-300">B2: ${countBox2}</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300">B3+: ${countBox3}</span>
+              <span class="ml-1 px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">Box ${currentBox}</span>
+            </div>
+          </div>
+
+          <!-- Flashcard View -->
+          <div onclick="flipCard()" class="card-perspective cursor-pointer select-none">
+            <div class="min-h-[260px] sm:min-h-[290px] rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-md ${
+              isFlipped 
+                ? 'bg-gradient-to-br from-indigo-600 to-indigo-800 text-white shadow-indigo-500/20' 
+                : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700'
+            }">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider ${isFlipped ? 'text-indigo-200' : 'text-slate-400'}">
+                  ${isFlipped ? 'Jawaban' : 'Pertanyaan'}
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${isFlipped ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}">
+                  ${card.deck || 'Umum'}
+                </span>
+              </div>
+
+              <!-- Content Teks -->
+              <div class="py-6 text-center">
+                <p class="text-base sm:text-xl font-medium leading-relaxed">
+                  ${isFlipped ? rawBack : rawFront}
+                </p>
+                ${!isFlipped && showHint && card.hint ? `
+                  <div class="mt-4 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs inline-block text-left">
+                    💡 <strong>Petunjuk:</strong> ${card.hint}
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Petunjuk Klik / Spasi -->
+              <div class="text-center text-[11px] ${isFlipped ? 'text-indigo-200' : 'text-slate-400'} flex items-center justify-center space-x-1">
+                <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i>
+                <span>Klik kartu atau tekan [Spasi] untuk membalik</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Baris Kontrol: Kembali, Hint, Lewati (Sejajar) -->
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="prevCard()" class="py-2.5 px-3 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition flex items-center justify-center space-x-1 shadow-sm">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Kembali</span>
+              <kbd class="hidden sm:inline text-[10px] bg-slate-100 dark:bg-slate-700 px-1 rounded text-slate-500">[←]</kbd>
+            </button>
+
+            <button onclick="toggleHint(event)" class="py-2.5 px-3 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 rounded-xl text-xs font-semibold transition flex items-center justify-center space-x-1 shadow-sm ${!card.hint ? 'opacity-40 cursor-not-allowed' : ''}" ${!card.hint ? 'disabled' : ''}>
+              <i data-lucide="lightbulb" class="w-4 h-4"></i>
+              <span class="truncate">${showHint ? 'Tutup Hint' : 'Hint'}</span>
+            </button>
+
+            <button onclick="nextCard()" class="py-2.5 px-3 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition flex items-center justify-center space-x-1 shadow-sm">
+              <span class="hidden sm:inline">Lewati</span>
+              <kbd class="hidden sm:inline text-[10px] bg-slate-100 dark:bg-slate-700 px-1 rounded text-slate-500">[→]</kbd>
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Tombol Penilaian Leitner (Aktif setelah dibalik) -->
+          ${isFlipped ? `
+            <div class="grid grid-cols-3 gap-2 pt-1 animate-fadeIn">
+              <button onclick="rateCard(1)" class="py-3 px-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 font-semibold text-xs transition flex flex-col items-center">
+                <span>1. Ulangi</span>
+                <span class="text-[10px] opacity-75 font-normal">(Box 1)</span>
+              </button>
+              <button onclick="rateCard(2)" class="py-3 px-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-semibold text-xs transition flex flex-col items-center">
+                <span>2. Bisa</span>
+                <span class="text-[10px] opacity-75 font-normal">(+1 Box)</span>
+              </button>
+              <button onclick="rateCard(3)" class="py-3 px-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-semibold text-xs transition flex flex-col items-center">
+                <span>3. Mudah</span>
+                <span class="text-[10px] opacity-75 font-normal">(+2 Box)</span>
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function flipCard() {
+      isFlipped = !isFlipped;
+      renderStudyArea();
+    }
+
+    function toggleHint(e) {
+      if (e) e.stopPropagation();
+      showHint = !showHint;
+      renderStudyArea();
+    }
+
+    function prevCard() {
+      if (studyQueue.length === 0) return;
+      isFlipped = false;
+      showHint = false;
+      currentIndex = (currentIndex - 1 + studyQueue.length) % studyQueue.length;
+      renderStudyArea();
+    }
+
+    function nextCard() {
+      if (studyQueue.length === 0) return;
+      isFlipped = false;
+      showHint = false;
+      currentIndex = (currentIndex + 1) % studyQueue.length;
+      renderStudyArea();
+    }
+
+    function rateCard(rating) {
+      if (currentIndex >= studyQueue.length) return;
+      const card = studyQueue[currentIndex];
+      if (!card) return;
+
+      const orig = cards.find(c => c.id === card.id);
+      if (orig) {
+        if (rating === 1) {
+          orig.box = 1; // Hukuman Lupa: Reset ke Box 1
+        } else if (rating === 2) {
+          orig.box = Math.min(5, (orig.box || 1) + 1);
+        } else if (rating === 3) {
+          orig.box = Math.min(5, (orig.box || 1) + 2);
+        }
+      }
+      saveCards();
+
+      // Logika Penyusutan Antrean:
+      // Jika berhasil ('Bisa' atau 'Mudah'), keluarkan dari sesi ini agar antrean berkurang hingga selesai.
+      if (rating === 2 || rating === 3) {
+        studyQueue.splice(currentIndex, 1);
+        if (currentIndex >= studyQueue.length) {
+          currentIndex = 0;
+        }
+      } else {
+        // Jika 'Ulangi', pindahkan kartu ke antrean paling belakang
+        const repeatCard = studyQueue.splice(currentIndex, 1)[0];
+        studyQueue.push(repeatCard);
+      }
+
+      isFlipped = false;
+      showHint = false;
+      renderStudyArea();
+    }
+
+    function resetStudyFilter() {
+      studyDeck = 'all';
+      studySubGroup = 'all';
+      document.getElementById('studyDeckSelect').value = 'all';
+      updateStudyFilters();
+      initStudySession();
+    }
+
+    // --- MATCHING GAME LOGIC ---
+    function initMatchingGame(pool) {
+      if (pool.length === 0) {
+        matchPairs = [];
+        matchIsPlaying = false;
+        stopMatchingGameTimer();
+        renderStudyArea();
+        return;
+      }
+
+      const count = Math.min(pool.length, matchPairCount);
+      matchPairs = [...pool].sort(() => 0.5 - Math.random()).slice(0, count);
+      matchMatchedIds = [];
+      matchSelectedLeft = null;
+      matchSelectedRight = null;
+      matchSeconds = 0;
+      matchIsPlaying = true;
+
+      stopMatchingGameTimer();
+      matchTimerInterval = setInterval(() => {
+        matchSeconds++;
+        const timerEl = document.getElementById('matchTimerDisplay');
+        if (timerEl) timerEl.textContent = `${matchSeconds}s`;
+      }, 1000);
+
+      renderStudyArea();
+    }
+
+    function stopMatchingGameTimer() {
+      if (matchTimerInterval) {
+        clearInterval(matchTimerInterval);
+        matchTimerInterval = null;
+      }
+    }
+
+    function stopMatchingGame() {
+      stopMatchingGameTimer();
+      matchIsPlaying = false;
+      executeStudyMode('flip');
+    }
+
+    function renderMatchingGameUI(container) {
+      if (!matchIsPlaying || matchPairs.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 text-center max-w-md mx-auto space-y-4">
+            <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-950/50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
+              <i data-lucide="puzzle" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Matching Game</h3>
+            <p class="text-xs text-slate-500">Cocokkan sisi pertanyaan dan jawaban secepat mungkin.</p>
+            <button onclick="initStudySession()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-sm">
+              Mulai Game Baru
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Selesai Game
+      if (matchMatchedIds.length === matchPairs.length) {
+        stopMatchingGameTimer();
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm text-center max-w-md mx-auto space-y-4">
+            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto">
+              <i data-lucide="trophy" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Permainan Selesai! 🎉</h3>
+            <p class="text-xs sm:text-sm text-slate-500">Anda berhasil mencocokkan ${matchPairs.length} pasangan dalam waktu <strong>${matchSeconds} detik</strong>.</p>
+            <div class="flex items-center space-x-2">
+              <button onclick="initStudySession()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-sm">
+                Main Lagi
+              </button>
+              <button onclick="executeStudyMode('flip')" class="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium">
+                Kembali ke Flip
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Daftar sisi kiri dan kanan (diacak secara independen jika belum diacak)
+      if (!window._matchShuffledRight || window._matchShuffledRight.length !== matchPairs.length) {
+        window._matchShuffledRight = [...matchPairs].sort(() => 0.5 - Math.random());
+      }
+
+      container.innerHTML = `
+        <div class="max-w-3xl w-full mx-auto space-y-4">
+          <!-- Game Header -->
+          <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+            <div class="flex items-center space-x-2">
+              <span class="text-slate-500">Waktu:</span>
+              <span id="matchTimerDisplay" class="font-mono text-indigo-600 dark:text-indigo-400 font-bold">${matchSeconds}s</span>
+            </div>
+            <div>
+              <span class="text-slate-500">Cocok:</span>
+              <span class="text-emerald-600 dark:text-emerald-400 font-bold">${matchMatchedIds.length} / ${matchPairs.length}</span>
+            </div>
+            <button onclick="confirmStopMatchingGame()" class="px-3 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 rounded-lg text-xs font-medium transition">
+              Akhiri Game
+            </button>
+          </div>
+
+          <!-- Matching Columns -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Kolom Kiri: Pertanyaan -->
+            <div class="space-y-2">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">Pertanyaan</div>
+              ${matchPairs.map(card => {
+                const isMatched = matchMatchedIds.includes(card.id);
+                const isSelected = matchSelectedLeft === card.id;
+                return `
+                  <button onclick="selectMatchLeft('${card.id}')" ${isMatched ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-xl border text-xs font-medium transition-all ${
+                    isMatched 
+                      ? 'opacity-20 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 cursor-not-allowed line-through' 
+                      : isSelected 
+                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500' 
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 dark:hover:border-slate-600'
+                  }">
+                    ${swapDirection ? card.back : card.front}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Kolom Kanan: Jawaban -->
+            <div class="space-y-2">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">Jawaban</div>
+              ${window._matchShuffledRight.map(card => {
+                const isMatched = matchMatchedIds.includes(card.id);
+                const isSelected = matchSelectedRight === card.id;
+                return `
+                  <button onclick="selectMatchRight('${card.id}')" ${isMatched ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-xl border text-xs font-medium transition-all ${
+                    isMatched 
+                      ? 'opacity-20 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 cursor-not-allowed line-through' 
+                      : isSelected 
+                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500' 
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 dark:hover:border-slate-600'
+                  }">
+                    ${swapDirection ? card.front : card.back}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmStopMatchingGame() {
+      showConfirmModal('Akhiri Permainan?', 'Apakah Anda yakin ingin menghentikan permainan mencocokkan ini?', () => {
+        stopMatchingGame();
+      });
+    }
+
+    function selectMatchLeft(id) {
+      if (matchMatchedIds.includes(id)) return;
+      matchSelectedLeft = id;
+      renderStudyArea();
+      checkMatch();
+    }
+
+    function selectMatchRight(id) {
+      if (matchMatchedIds.includes(id)) return;
+      matchSelectedRight = id;
+      renderStudyArea();
+      checkMatch();
+    }
+
+    function checkMatch() {
+      if (matchSelectedLeft && matchSelectedRight) {
+        if (matchSelectedLeft === matchSelectedRight) {
+          matchMatchedIds.push(matchSelectedLeft);
+          matchSelectedLeft = null;
+          matchSelectedRight = null;
+          showToast('Cocok! ✨', 'success');
+          renderStudyArea();
+        } else {
+          setTimeout(() => {
+            matchSelectedLeft = null;
+            matchSelectedRight = null;
+            renderStudyArea();
+          }, 450);
+        }
+      }
+    }
+
+    // --- STATISTIK LEITNER RENDERER ---
+    function renderStats() {
+      const container = document.getElementById('statsBoxesContainer');
+      const boxCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      cards.forEach(c => {
+        const b = c.box || 1;
+        if (boxCounts[b] !== undefined) boxCounts[b]++;
+      });
+
+      const colors = {
+        1: { border: 'border-rose-200 dark:border-rose-800', bg: 'bg-rose-50 dark:bg-rose-950/30', text: 'text-rose-600 dark:text-rose-400' },
+        2: { border: 'border-amber-200 dark:border-amber-800', bg: 'bg-amber-50 dark:bg-amber-950/30', text: 'text-amber-600 dark:text-amber-400' },
+        3: { border: 'border-blue-200 dark:border-blue-800', bg: 'bg-blue-50 dark:bg-blue-950/30', text: 'text-blue-600 dark:text-blue-400' },
+        4: { border: 'border-indigo-200 dark:border-indigo-800', bg: 'bg-indigo-50 dark:bg-indigo-950/30', text: 'text-indigo-600 dark:text-indigo-400' },
+        5: { border: 'border-emerald-200 dark:border-emerald-800', bg: 'bg-emerald-50 dark:bg-emerald-950/30', text: 'text-emerald-600 dark:text-emerald-400' },
+      };
+
+      const schedules = {
+        1: 'Setiap Hari',
+        2: 'Tiap 2-3 Hari',
+        3: '1 Kali Seminggu',
+        4: '2 Minggu Sekali',
+        5: '1 Bulan Sekali'
+      };
+
+      container.innerHTML = [1, 2, 3, 4, 5].map(b => `
+        <div class="p-4 rounded-2xl border ${colors[b].border} ${colors[b].bg} flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+            <span>Box ${b}</span>
+            <i data-lucide="inbox" class="w-4 h-4 ${colors[b].text}"></i>
+          </div>
+          <div class="my-3">
+            <span class="text-3xl font-extrabold ${colors[b].text}">${boxCounts[b]}</span>
+            <span class="text-xs text-slate-400 ml-1">kartu</span>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">${schedules[b]}</div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // --- KELOLA KARTU RENDERER ---
+    function renderManageList() {
+      const container = document.getElementById('manageCardList');
+      const query = (document.getElementById('manageSearchInput')?.value || '').toLowerCase().trim();
+
+      let filtered = cards;
+      if (query) {
+        filtered = filtered.filter(c => 
+          (c.front && c.front.toLowerCase().includes(query)) ||
+          (c.back && c.back.toLowerCase().includes(query)) ||
+          (c.hint && c.hint.toLowerCase().includes(query)) ||
+          (c.deck && c.deck.toLowerCase().includes(query))
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center text-slate-400 text-xs">
+            Tidak ada kartu yang cocok dengan pencarian.
+          </div>
+        `;
+        return;
+      }
+
+      // Kelompokkan berdasarkan Dek
+      const decksMap = {};
+      filtered.forEach(c => {
+        const d = c.deck || 'Tanpa Dek';
+        if (!decksMap[d]) decksMap[d] = [];
+        decksMap[d].push(c);
+      });
+
+      container.innerHTML = Object.keys(decksMap).sort().map(deckName => {
+        const deckCards = decksMap[deckName];
+        const isCollapsed = collapsedDecks[deckName] === true;
+
+        return `
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+            <!-- Header Dek (Clickable Accordion) -->
+            <div onclick="toggleDeckAccordion('${deckName}')" class="p-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between cursor-pointer select-none hover:bg-slate-100/70 dark:hover:bg-slate-700/50 transition">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="${isCollapsed ? 'chevron-right' : 'chevron-down'}" class="w-4 h-4 text-slate-400"></i>
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white">${deckName}</h4>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium">${deckCards.length} kartu</span>
+              </div>
+            </div>
+
+            <!-- List Isi Dek -->
+            <div class="${isCollapsed ? 'hidden' : 'divide-y divide-slate-100 dark:divide-slate-700/60'}">
+              ${deckCards.map(c => `
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 dark:hover:bg-slate-750 transition">
+                  <div class="space-y-1 flex-1">
+                    <div class="flex items-center space-x-2">
+                      <span class="text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold">Box ${c.box || 1}</span>
+                      ${c.subgroup ? `<span class="text-xs text-slate-400 font-medium">• ${c.subgroup}</span>` : ''}
+                    </div>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">${c.front}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">${c.back}</p>
+                    ${c.hint ? `<p class="text-[11px] text-amber-600 dark:text-amber-400">💡 Hint: ${c.hint}</p>` : ''}
+                  </div>
+                  <div class="flex items-center space-x-1.5 self-end sm:self-center">
+                    <button onclick="editCard('${c.id}')" class="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg transition" title="Edit Kartu">
+                      <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="confirmDeleteSingleCard('${c.id}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-700 rounded-lg transition" title="Hapus Kartu">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function toggleDeckAccordion(deckName) {
+      collapsedDecks[deckName] = !collapsedDecks[deckName];
+      renderManageList();
+    }
+
+    function toggleAllDecksAccordion() {
+      const decks = Array.from(new Set(cards.map(c => c.deck || 'Tanpa Dek')));
+      const allCollapsed = decks.every(d => collapsedDecks[d] === true);
+      decks.forEach(d => {
+        collapsedDecks[d] = !allCollapsed;
+      });
+      renderManageList();
+    }
+
+    // --- CARD MODAL (TAMBAH / EDIT) ---
+    function openCardModal(card = null) {
+      document.getElementById('editCardId').value = card ? card.id : '';
+      document.getElementById('cardModalTitle').textContent = card ? 'Edit Kartu' : 'Tambah Kartu Baru';
+      document.getElementById('cardFrontInput').value = card ? card.front : '';
+      document.getElementById('cardBackInput').value = card ? card.back : '';
+      document.getElementById('cardHintInput').value = card ? (card.hint || '') : '';
+      document.getElementById('cardDeckInput').value = card ? (card.deck || '') : '';
+      document.getElementById('cardSubGroupInput').value = card ? (card.subgroup || '') : '';
+      document.getElementById('cardModal').classList.remove('hidden');
+    }
+
+    function closeCardModal() {
+      document.getElementById('cardModal').classList.add('hidden');
+    }
+
+    function editCard(id) {
+      const c = cards.find(x => String(x.id) === String(id));
+      if (c) openCardModal(c);
+    }
+
+    function saveCardFromModal() {
+      const id = document.getElementById('editCardId').value;
+      const front = document.getElementById('cardFrontInput').value.trim();
+      const back = document.getElementById('cardBackInput').value.trim();
+      const hint = document.getElementById('cardHintInput').value.trim();
+      const deck = document.getElementById('cardDeckInput').value.trim() || 'Tanpa Dek';
+      const subgroup = document.getElementById('cardSubGroupInput').value.trim();
+
+      if (!front || !back) {
+        showToast('Sisi depan dan belakang kartu tidak boleh kosong!', 'error');
+        return;
+      }
+
+      if (id) {
+        // Edit Mode
+        const card = cards.find(x => String(x.id) === String(id));
+        if (card) {
+          card.front = front;
+          card.back = back;
+          card.hint = hint;
+          card.deck = deck;
+          card.subgroup = subgroup;
+          showToast('Kartu berhasil diperbarui!', 'success');
+        }
+      } else {
+        // Create Mode
+        cards.push({
+          id: Date.now().toString(),
+          front,
+          back,
+          hint,
+          deck,
+          subgroup,
+          box: 1
+        });
+        showToast('Kartu baru berhasil ditambahkan!', 'success');
+      }
+
+      saveCards();
+      closeCardModal();
+      renderManageList();
+      updateStudyFilters();
+    }
+
+    function confirmDeleteSingleCard(id) {
+      showConfirmModal('Hapus Kartu?', 'Kartu ini akan dihapus secara permanen dari sistem.', () => {
+        cards = cards.filter(c => String(c.id) !== String(id));
+        saveCards();
+        renderManageList();
+        updateStudyFilters();
+        showToast('Kartu telah dihapus.', 'info');
+      });
+    }
+
+    // --- BULK DELETE MODAL ---
+    function openCategoryDeleteModal() {
+      onDeleteTargetTypeChange();
+      document.getElementById('categoryDeleteModal').classList.remove('hidden');
+    }
+
+    function closeCategoryDeleteModal() {
+      document.getElementById('categoryDeleteModal').classList.add('hidden');
+    }
+
+    function onDeleteTargetTypeChange() {
+      const type = document.getElementById('deleteTargetType').value;
+      const select = document.getElementById('deleteTargetValue');
+      const label = document.getElementById('deleteTargetSelectLabel');
+
+      if (type === 'deck') {
+        label.textContent = 'Pilih Dek';
+        const decks = Array.from(new Set(cards.map(c => c.deck || 'Tanpa Dek'))).sort();
+        select.innerHTML = decks.map(d => `<option value="${d}">${d}</option>`).join('');
+      } else {
+        label.textContent = 'Pilih Sub-Grup';
+        const sgs = Array.from(new Set(cards.map(c => c.subgroup || 'Tanpa Sub-Grup'))).sort();
+        select.innerHTML = sgs.map(s => `<option value="${s}">${s}</option>`).join('');
+      }
+    }
+
+    function executeCategoryDelete() {
+      const type = document.getElementById('deleteTargetType').value;
+      const val = document.getElementById('deleteTargetValue').value;
+
+      showConfirmModal(
+        'Hapus Semua Kartu Terpilih?',
+        `Seluruh kartu pada ${type === 'deck' ? 'Dek' : 'Sub-Grup'} "${val}" akan dihapus permanen!`,
+        () => {
+          const prevCount = cards.length;
+          if (type === 'deck') {
+            cards = cards.filter(c => (c.deck || 'Tanpa Dek') !== val);
+          } else {
+            cards = cards.filter(c => (c.subgroup || 'Tanpa Sub-Grup') !== val);
+          }
+          const deleted = prevCount - cards.length;
+          saveCards();
+          closeCategoryDeleteModal();
+          renderManageList();
+          updateStudyFilters();
+          showToast(`Berhasil menghapus ${deleted} kartu!`, 'success');
+        }
+      );
+    }
+
+    // --- EXPORT CSV MODAL ---
+    function openExportModal() {
+      onExportScopeChange();
+      document.getElementById('exportModal').classList.remove('hidden');
+    }
+
+    function closeExportModal() {
+      document.getElementById('exportModal').classList.add('hidden');
+    }
+
+    function onExportScopeChange() {
+      const scope = document.getElementById('exportScopeSelect').value;
+      const wrapper = document.getElementById('exportTargetWrapper');
+      const select = document.getElementById('exportTargetSelect');
+      const label = document.getElementById('exportTargetLabel');
+
+      if (scope === 'all') {
+        wrapper.classList.add('hidden');
+      } else if (scope === 'deck') {
+        wrapper.classList.remove('hidden');
+        label.textContent = 'Pilih Dek';
+        const decks = Array.from(new Set(cards.map(c => c.deck || 'Tanpa Dek'))).sort();
+        select.innerHTML = decks.map(d => `<option value="${d}">${d}</option>`).join('');
+      } else if (scope === 'subgroup') {
+        wrapper.classList.remove('hidden');
+        label.textContent = 'Pilih Sub-Grup';
+        const sgs = Array.from(new Set(cards.map(c => c.subgroup || 'Tanpa Sub-Grup'))).sort();
+        select.innerHTML = sgs.map(s => `<option value="${s}">${s}</option>`).join('');
+      }
+    }
+
+    function executeExportCSV() {
+      const scope = document.getElementById('exportScopeSelect').value;
+      let targetCards = [...cards];
+      let filePrefix = 'flash-cardo-all';
+
+      if (scope === 'deck') {
+        const val = document.getElementById('exportTargetSelect').value;
+        targetCards = targetCards.filter(c => (c.deck || 'Tanpa Dek') === val);
+        filePrefix = `flash-cardo-deck-${val.toLowerCase().replace(/\s+/g, '-')}`;
+      } else if (scope === 'subgroup') {
+        const val = document.getElementById('exportTargetSelect').value;
+        targetCards = targetCards.filter(c => (c.subgroup || 'Tanpa Sub-Grup') === val);
+        filePrefix = `flash-cardo-subgroup-${val.toLowerCase().replace(/\s+/g, '-')}`;
+      }
+
+      if (targetCards.length === 0) {
+        showToast('Tidak ada kartu untuk diekspor.', 'error');
+        return;
+      }
+
+      let csvContent = "Front,Back,Hint,Deck,Subgroup,Box\n";
+      targetCards.forEach(c => {
+        const row = [
+          `"${(c.front || '').replace(/"/g, '""')}"`,
+          `"${(c.back || '').replace(/"/g, '""')}"`,
+          `"${(c.hint || '').replace(/"/g, '""')}"`,
+          `"${(c.deck || '').replace(/"/g, '""')}"`,
+          `"${(c.subgroup || '').replace(/"/g, '""')}"`,
+          c.box || 1
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${filePrefix}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      closeExportModal();
+      showToast('CSV berhasil diunduh!', 'success');
+    }
+
+    // --- IMPORT CSV & BACKUP/RESTORE JSON ---
+    function handleCSVImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        if (lines.length <= 1) {
+          showToast('File CSV kosong atau tidak valid.', 'error');
+          return;
+        }
+
+        let importedCount = 0;
+        // Parse sederhana untuk CSV
+        for (let i = 1; i < lines.length; i++) {
+          const match = lines[i].match(/(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,]+)|,)/g);
+          if (match && match.length >= 2) {
+            const clean = str => (str || '').replace(/^"|"$/g, '').replace(/""/g, '"').trim();
+            const front = clean(match[0]);
+            const back = clean(match[1]);
+            const hint = match[2] ? clean(match[2]) : '';
+            const deck = match[3] ? clean(match[3]) : 'Impor CSV';
+            const subgroup = match[4] ? clean(match[4]) : '';
+            const box = match[5] ? parseInt(clean(match[5])) || 1 : 1;
+
+            if (front && back) {
+              cards.push({
+                id: (Date.now() + i).toString(),
+                front,
+                back,
+                hint,
+                deck,
+                subgroup,
+                box: Math.min(5, Math.max(1, box))
+              });
+              importedCount++;
+            }
+          }
+        }
+
+        saveCards();
+        renderManageList();
+        updateStudyFilters();
+        showToast(`Berhasil mengimpor ${importedCount} kartu!`, 'success');
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function checkDuplicates() {
+      const seen = new Set();
+      const duplicates = [];
+      cards.forEach(c => {
+        const key = `${(c.front || '').trim().toLowerCase()}__${(c.deck || '').trim().toLowerCase()}`;
+        if (seen.has(key)) {
+          duplicates.push(c.front);
+        } else {
+          seen.add(key);
+        }
+      });
+
+      if (duplicates.length === 0) {
+        showToast('Tidak ada kartu duplikat ditemukan! ✨', 'success');
+      } else {
+        showToast(`Ditemukan ${duplicates.length} kartu duplikat!`, 'info');
+      }
+    }
+
+    function backupJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cards, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `flash-cardo-backup-${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup JSON berhasil diunduh!', 'success');
+    }
+
+    function handleJSONRestore(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            showConfirmModal('Timpa Data dengan Backup?', `Akan memuat ${imported.length} kartu dari file JSON.`, () => {
+              cards = imported;
+              saveCards();
+              renderManageList();
+              updateStudyFilters();
+              showToast('Data berhasil dipulihkan dari JSON!', 'success');
+            }, false);
+          } else {
+            showToast('Format berkas JSON tidak sesuai.', 'error');
+          }
+        } catch (err) {
+          showToast('Gagal membaca file JSON.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // --- KEYBOARD SHORTCUTS ---
+    document.addEventListener('keydown', (e) => {
+      // Abaikan jika user sedang mengetik di input / textarea / modal terbuka
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+      if (!document.getElementById('cardModal').classList.contains('hidden')) return;
+      if (!document.getElementById('exportModal').classList.contains('hidden')) return;
+      if (!document.getElementById('categoryDeleteModal').classList.contains('hidden')) return;
+      if (!document.getElementById('confirmModal').classList.contains('hidden')) return;
+
+      if (currentTab === 'study' && studyMode === 'flip') {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          flipCard();
+        } else if (e.code === 'ArrowLeft') {
+          e.preventDefault();
+          prevCard();
+        } else if (e.code === 'ArrowRight') {
+          e.preventDefault();
+          nextCard();
+        } else if (e.code === 'KeyH') {
+          toggleHint();
+        } else if (isFlipped) {
+          if (e.key === '1') rateCard(1);
+          else if (e.key === '2') rateCard(2);
+          else if (e.key === '3') rateCard(3);
+        }
+      }
+    });
+
+    // --- WINDOW LOAD INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initData();
+      updateStudyFilters();
+      initStudySession();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
